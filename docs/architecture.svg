@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" font-family="'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">
+  <defs>
+    <linearGradient id="hdr" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8843C"/><stop offset="1" stop-color="#F4A93D"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+      <feOffset dy="4" result="o"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="ar" markerWidth="12" markerHeight="12" refX="8" refY="5" orient="auto">
+      <path d="M0,1 L8,5 L0,9 Z" fill="#E0C9A8"/>
+    </marker>
+  </defs>
+
+  <rect x="2" y="2" width="1196" height="596" rx="22" fill="#FFFBF5" stroke="#F0E0CC" stroke-width="2"/>
+
+  <!-- Title -->
+  <text x="600" y="54" text-anchor="middle" font-size="30" font-weight="800" fill="#3A2E26">宠物状态分析系统 · 技术架构</text>
+  <text x="600" y="82" text-anchor="middle" font-size="14" font-weight="600" fill="#B5A593" letter-spacing="2">PET STATUS ANALYZER — PIPELINE</text>
+
+  <!-- Input band -->
+  <g filter="url(#sh)">
+    <rect x="345" y="108" width="230" height="48" rx="24" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/>
+  </g>
+  <circle cx="378" cy="132" r="11" fill="#5FA88A"/>
+  <text x="400" y="137" font-size="15" font-weight="700" fill="#3A2E26">用户上传 · 视频 / 图片</text>
+  <line x1="575" y1="132" x2="623" y2="132" stroke="#E0C9A8" stroke-width="2.5" marker-end="url(#ar)"/>
+  <g filter="url(#sh)">
+    <rect x="628" y="108" width="227" height="48" rx="24" fill="url(#hdr)"/>
+  </g>
+  <text x="741" y="137" text-anchor="middle" font-size="15" font-weight="800" fill="#FFFFFF">FastAPI · POST /analyze</text>
+  <line x1="741" y1="156" x2="741" y2="196" stroke="#E0C9A8" stroke-width="2.5" marker-end="url(#ar)"/>
+
+  <!-- Pipeline cards -->
+  <!-- card geometry: x = 40,270,500,730,960 ; w=200 ; y=210 h=232 -->
+  <!-- arrows between -->
+  <g stroke="#E0C9A8" stroke-width="2.5" marker-end="url(#ar)">
+    <line x1="244" y1="326" x2="266" y2="326"/>
+    <line x1="474" y1="326" x2="496" y2="326"/>
+    <line x1="704" y1="326" x2="726" y2="326"/>
+    <line x1="934" y1="326" x2="956" y2="326"/>
+  </g>
+
+  <!-- Card 1 数据获取 -->
+  <g filter="url(#sh)"><rect x="40" y="210" width="204" height="232" rx="16" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <rect x="40" y="210" width="204" height="8" rx="4" fill="#E8843C"/>
+  <circle cx="72" cy="252" r="17" fill="#FFF3E4"/><text x="72" y="258" text-anchor="middle" font-size="16" font-weight="800" fill="#E8843C">1</text>
+  <g transform="translate(120,238)" fill="none" stroke="#E8843C" stroke-width="2.2"><rect x="-2" y="-2" width="22" height="16" rx="3"/><rect x="4" y="-8" width="22" height="16" rx="3" fill="#FFF3E4"/></g>
+  <text x="62" y="306" font-size="18" font-weight="800" fill="#3A2E26">数据获取</text>
+  <text x="62" y="332" font-size="13" font-weight="700" fill="#B5683C">OpenCV 抽帧</text>
+  <text x="62" y="362" font-size="13" fill="#8A7866">按固定间隔采样，</text>
+  <text x="62" y="382" font-size="13" fill="#8A7866">非逐帧，降算力</text>
+  <text x="62" y="418" font-size="12" font-weight="700" fill="#5FA88A">→ 候选帧</text>
+
+  <!-- Card 2 特征提取 -->
+  <g filter="url(#sh)"><rect x="270" y="210" width="204" height="232" rx="16" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <rect x="270" y="210" width="204" height="8" rx="4" fill="#F4A93D"/>
+  <circle cx="302" cy="252" r="17" fill="#FCEFD8"/><text x="302" y="258" text-anchor="middle" font-size="16" font-weight="800" fill="#D9882B">2</text>
+  <g transform="translate(348,246)" fill="none" stroke="#F4A93D" stroke-width="2.2"><ellipse cx="10" cy="0" rx="14" ry="9"/><circle cx="10" cy="0" r="3.5" fill="#F4A93D"/></g>
+  <text x="292" y="306" font-size="18" font-weight="800" fill="#3A2E26">特征提取</text>
+  <text x="292" y="332" font-size="13" font-weight="700" fill="#D9882B">YOLOv8 · dog-pose</text>
+  <text x="292" y="362" font-size="13" fill="#8A7866">检测框 + 关键点</text>
+  <text x="292" y="382" font-size="13" fill="#8A7866">最佳帧 + 裁剪主体</text>
+  <text x="292" y="418" font-size="12" font-weight="700" fill="#5FA88A">→ 多源特征</text>
+
+  <!-- Card 3 分类回归 -->
+  <g filter="url(#sh)"><rect x="500" y="210" width="204" height="232" rx="16" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <rect x="500" y="210" width="204" height="8" rx="4" fill="#5FA88A"/>
+  <circle cx="532" cy="252" r="17" fill="#EAF4EF"/><text x="532" y="258" text-anchor="middle" font-size="16" font-weight="800" fill="#3F7A63">3</text>
+  <g transform="translate(572,238)" stroke="#5FA88A" stroke-width="3" stroke-linecap="round"><line x1="0" y1="14" x2="0" y2="6"/><line x1="8" y1="14" x2="8" y2="0"/><line x1="16" y1="14" x2="16" y2="9"/></g>
+  <text x="522" y="306" font-size="18" font-weight="800" fill="#3A2E26">分类与回归</text>
+  <text x="522" y="332" font-size="13" font-weight="700" fill="#3F7A63">MobileNetV2</text>
+  <text x="522" y="362" font-size="13" fill="#8A7866">四类情绪概率</text>
+  <text x="522" y="382" font-size="13" fill="#8A7866">姿态 / 运动判别</text>
+  <text x="522" y="418" font-size="12" font-weight="700" fill="#5FA88A">→ 概率 + 标签</text>
+
+  <!-- Card 4 决策融合 -->
+  <g filter="url(#sh)"><rect x="730" y="210" width="204" height="232" rx="16" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <rect x="730" y="210" width="204" height="8" rx="4" fill="#E8843C"/>
+  <circle cx="762" cy="252" r="17" fill="#FFF3E4"/><text x="762" y="258" text-anchor="middle" font-size="16" font-weight="800" fill="#E8843C">4</text>
+  <g transform="translate(800,238)" fill="#E8843C"><rect x="0" y="0" width="7" height="7" rx="1.5"/><rect x="11" y="0" width="7" height="7" rx="1.5"/><rect x="0" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></g>
+  <text x="752" y="306" font-size="18" font-weight="800" fill="#3A2E26">决策融合</text>
+  <text x="752" y="332" font-size="13" font-weight="700" fill="#B5683C">规则加权</text>
+  <text x="752" y="362" font-size="13" fill="#8A7866">概率·运动·质量·</text>
+  <text x="752" y="382" font-size="13" fill="#8A7866">置信度 + 不确定性</text>
+  <text x="752" y="418" font-size="12" font-weight="700" fill="#5FA88A">→ 六维指数</text>
+
+  <!-- Card 5 表示输出 -->
+  <g filter="url(#sh)"><rect x="960" y="210" width="204" height="232" rx="16" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <rect x="960" y="210" width="204" height="8" rx="4" fill="#5FA88A"/>
+  <circle cx="992" cy="252" r="17" fill="#EAF4EF"/><text x="992" y="258" text-anchor="middle" font-size="16" font-weight="800" fill="#3F7A63">5</text>
+  <g transform="translate(1032,244)" fill="none" stroke="#5FA88A" stroke-width="2"><polygon points="0,-12 10.4,-6 10.4,6 0,12 -10.4,6 -10.4,-6"/><polygon points="0,-7 6,-3.5 6,3.5 0,7 -6,3.5 -6,-3.5" stroke-width="1.4"/></g>
+  <text x="982" y="306" font-size="18" font-weight="800" fill="#3A2E26">表示输出</text>
+  <text x="982" y="332" font-size="13" font-weight="700" fill="#3F7A63">ECharts</text>
+  <text x="982" y="362" font-size="13" fill="#8A7866">六维雷达图</text>
+  <text x="982" y="382" font-size="13" fill="#8A7866">+ 趣味文案</text>
+  <text x="982" y="418" font-size="12" font-weight="700" fill="#5FA88A">→ 结果页</text>
+
+  <!-- Output band -->
+  <line x1="1062" y1="442" x2="1062" y2="486" stroke="#E0C9A8" stroke-width="2.5" marker-end="url(#ar)"/>
+  <g filter="url(#sh)"><rect x="922" y="496" width="240" height="48" rx="24" fill="#FFFFFF" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <text x="1042" y="525" text-anchor="middle" font-size="15" font-weight="700" fill="#3A2E26">前端 ECharts 六维雷达图</text>
+  <line x1="922" y1="520" x2="884" y2="520" stroke="#E0C9A8" stroke-width="2.5" marker-end="url(#ar)"/>
+  <g filter="url(#sh)"><rect x="700" y="496" width="180" height="48" rx="24" fill="#FFF3E4" stroke="#F0E0CC" stroke-width="1.5"/></g>
+  <text x="790" y="525" text-anchor="middle" font-size="15" font-weight="800" fill="#B5683C">统一 JSON 结果</text>
+
+  <text x="40" y="525" font-size="13" font-weight="600" fill="#B5A593">模块解耦：五段算法由后端统一编排，</text>
+  <text x="40" y="545" font-size="13" font-weight="600" fill="#B5A593">前端只对接一个 /analyze 接口</text>
+</svg>

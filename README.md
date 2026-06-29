@@ -7,6 +7,8 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-MobileNetV2-EE4C2C?logo=pytorch&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+📖 **简体中文** | [English](README.en.md)
+
 上传宠物短视频或图片 → **YOLOv8** 检测猫狗 → 自动挑选最佳帧 → **dog-pose** 姿态与 **MobileNetV2** 情绪识别 → 决策融合出**六维状态指数** → 前端用 **ECharts** 雷达图与趣味文案展示。一条完整的计算机视觉 / 模式识别流水线，FastAPI 后端，前端同源、**断网也能演示**。
 
 > ⚠️ 系统输出的是**状态指数**（基于视觉特征、运动信息与分类模型概率构建），用于趣味化分析与可视化展示，**并非对宠物真实情绪的绝对判断**。
@@ -34,21 +36,7 @@
 
 ## 🏗️ 系统架构
 
-```mermaid
-flowchart LR
-    U([用户上传<br/>视频 / 图片]) --> API[["FastAPI<br/>POST /analyze"]]
-    API --> SAMP[OpenCV 抽帧]
-    subgraph DET["检测与姿态"]
-        SAMP --> YOLO[YOLOv8<br/>检测猫狗] --> BEST[多准则<br/>最佳帧] --> CROP[裁剪主体]
-        BEST --> POSE[dog-pose<br/>关键点 · 行为]
-    end
-    CROP --> EMO[MobileNetV2<br/>情绪分类]
-    YOLO --> FUSE
-    POSE --> FUSE
-    EMO --> FUSE[决策融合<br/>六维状态指数]
-    FUSE --> JSON[(统一 JSON)]
-    JSON --> FE([前端 ECharts<br/>六维雷达图 + 文案])
-```
+![系统架构图](docs/architecture.svg)
 
 > 模块解耦：五个算法环节统一由后端编排，前端只对接一个 `/analyze` 接口。
 
