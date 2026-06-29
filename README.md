@@ -1,5 +1,6 @@
 # 宠物状态分析系统 · Pet Status Analyzer
 
+![CI](https://github.com/2377479468/pet-status-analysis/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
 ![YOLOv8](https://img.shields.io/badge/YOLOv8-detection%20%2B%20pose-orange)
@@ -31,13 +32,27 @@
 | --- | --- |
 | ![accuracy](docs/showcase_accuracy.png) | ![confusion](docs/showcase_confusion.png) |
 
-## 🧠 技术流水线
+## 🏗️ 系统架构
 
+```mermaid
+flowchart LR
+    U([用户上传<br/>视频 / 图片]) --> API[["FastAPI<br/>POST /analyze"]]
+    API --> SAMP[OpenCV 抽帧]
+    subgraph DET["检测与姿态"]
+        SAMP --> YOLO[YOLOv8<br/>检测猫狗] --> BEST[多准则<br/>最佳帧] --> CROP[裁剪主体]
+        BEST --> POSE[dog-pose<br/>关键点 · 行为]
+    end
+    CROP --> EMO[MobileNetV2<br/>情绪分类]
+    YOLO --> FUSE
+    POSE --> FUSE
+    EMO --> FUSE[决策融合<br/>六维状态指数]
+    FUSE --> JSON[(统一 JSON)]
+    JSON --> FE([前端 ECharts<br/>六维雷达图 + 文案])
 ```
-数据获取            特征提取                 分类与回归            决策融合         表示
- 抽帧采样   →   YOLO 检测 / 关键点 / CNN  →  猫狗·情绪·姿态·运动  →  规则加权融合  →  六维雷达图
-(OpenCV)      (YOLOv8 / dog-pose / MobileNetV2)                   (含不确定性)     (ECharts)
-```
+
+> 模块解耦：五个算法环节统一由后端编排，前端只对接一个 `/analyze` 接口。
+
+## 🧠 技术流水线
 
 | 阶段 | 技术 | 输入 → 输出 |
 | --- | --- | --- |
