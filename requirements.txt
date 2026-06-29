@@ -1,0 +1,22 @@
+# ===== A 后端 / Web 服务 =====
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9        # FastAPI 接收上传文件(UploadFile)必需
+
+# ===== B 视频处理 / YOLO 检测 =====
+opencv-python>=4.8.0
+ultralytics>=8.0.0             # YOLOv8 猫狗检测 + dog-pose 姿态
+
+# ===== C 情绪模型（迁移学习）=====
+torch>=2.0.0
+torchvision>=0.15.0
+pillow>=9.0.0
+
+# ===== 训练 / 评估可视化（C 的 train.py）=====
+matplotlib>=3.5.0
+seaborn>=0.12.0
+scikit-learn>=1.0.0
+
+# ===== 通用 =====
+numpy>=1.21.0
+kagglehub>=0.1.0              # C 下载数据集时使用（可选）

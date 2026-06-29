@@ -1,0 +1,42 @@
+# Dog-Pose dataset config
+
+# 数据集根目录，注意这里用相对路径，不要写死成 C:/xxx 或 /Users/xxx
+path: ../datasets/dog-pose
+
+train: images/train
+val: images/val
+
+# 24 个关键点，每个点 x, y, visibility
+kpt_shape: [24, 3]
+
+names:
+  0: dog
+
+kpt_names:
+  0:
+    - front_left_paw
+    - front_left_knee
+    - front_left_elbow
+    - rear_left_paw
+    - rear_left_knee
+    - rear_left_elbow
+    - front_right_paw
+    - front_right_knee
+    - front_right_elbow
+    - rear_right_paw
+    - rear_right_knee
+    - rear_right_elbow
+    - tail_start
+    - tail_end
+    - left_ear_base
+    - right_ear_base
+    - nose
+    - chin
+    - left_ear_tip
+    - right_ear_tip
+    - left_eye
+    - right_eye
+    - withers
+    - throat
+
+download: https://github.com/ultralytics/assets/releases/download/v0.0.0/dog-pose.zip

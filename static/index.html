@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宠物状态分析</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- 本地优先加载 ECharts（离线可用）；本地缺失时再回退 CDN -->
+  <script src="echarts.min.js"></script>
+  <script>
+    if (typeof echarts === 'undefined') {
+      document.write('<scr' + 'ipt src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></scr' + 'ipt>');
+    }
+  </script>
+  <style>
+    /* ===== D 同学动态行为指标样式 ===== */
+    .dyn-beh {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dyn-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .dyn-label {
+      font-size: 13px;
+      color: #888;
+    }
+    .dyn-tag {
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .dyn-motion {
+      margin: 4px 0;
+    }
+    .dyn-motion-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #888;
+    }
+    .dyn-motion-val {
+      font-weight: bold;
+    }
+    .dyn-motion-track {
+      width: 100%;
+      height: 6px;
+      background-color: #f0f0f0;
+      border-radius: 3px;
+      margin-top: 4px;
+    }
+    .dyn-motion-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+    .dyn-timeline {
+      margin-top: 8px;
+    }
+    .dyn-timeline-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .dyn-tl-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dyn-tl-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .dyn-tl-time {
+      color: #999;
+      font-size: 12px;
+      min-width: 90px;
+    }
+    .dyn-tl-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dyn-tl-beh {
+      font-weight: 500;
+      color: #333;
+    }
+    .dyn-tl-conf {
+      font-size: 12px;
+      color: #888;
+      margin-left: auto;
+    }
+    .metrics-empty {
+      color: #aaa;
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <span class="topbar-title">宠物状态分析</span>
+    <span class="topbar-sub">模式识别课程大作业</span>
+  </header>
+
+  <main class="main-panels">
+
+    <!-- ===== 左面板 ===== -->
+    <section class="panel panel-left" id="leftPanel">
+
+      <!-- 上传区 -->
+      <div class="upload-area" id="uploadArea">
+        <label for="fileInput" class="upload-label">
+          <div class="upload-icon-circle">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <span class="upload-main-text">点击上传图片或视频</span>
+          <span class="upload-sub-text">JPG / PNG / MP4 / MOV / WebM</span>
+        </label>
+        <input type="file" id="fileInput" accept="image/*,video/*" capture="environment" hidden>
+        <p class="upload-or">或拖拽文件到此处</p>
+        <p class="upload-notice">请确保视频画面稳定、镜头不晃动，以便准确截取最佳帧</p>
+      </div>
+
+      <!-- 图片预览 -->
+      <div class="media-preview" id="imagePreview" style="display:none">
+        <img id="previewImage" src="" alt="预览">
+        <div class="media-meta">
+          <span class="media-name" id="imageName"></span>
+          <button class="btn-remove" id="removeImage">重新选择</button>
+        </div>
+      </div>
+
+      <!-- 视频预览 -->
+      <div class="media-preview" id="videoPreview" style="display:none">
+        <video id="previewVideo" controls muted loop autoplay playsinline></video>
+        <div class="media-meta">
+          <span class="media-name" id="videoName"></span>
+          <button class="btn-remove" id="removeVideo">重新选择</button>
+        </div>
+      </div>
+
+      <button class="btn-analyze" id="analyzeBtn" style="display:none">开始分析</button>
+
+      <button class="btn-demo" id="demoBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        使用演示数据
+      </button>
+    </section>
+
+    <!-- ===== 右面板 ===== -->
+    <section class="panel panel-right" id="rightPanel">
+
+      <div class="right-empty" id="rightEmpty">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25">
+          <path d="M3 12c0-4.5 3.5-8 8-8h2c4.5 0 8 3.5 8 8v2c0 2-1.5 3.5-3.5 3.5h-1.5c-1 0-2 .5-2.5 1.5l-.5 1h-2l-.5-1c-.5-1-1.5-1.5-2.5-1.5H6.5C4.5 17.5 3 16 3 14v-2z"/>
+          <circle cx="8" cy="9" r="1.5" fill="currentColor"/><circle cx="16" cy="9" r="1.5" fill="currentColor"/>
+        </svg>
+        <p>上传图片/视频并点击分析</p>
+        <p class="right-empty-sub">结果将显示在此处</p>
+      </div>
+
+      <!-- 加载中 -->
+      <div class="right-overlay" id="loadingOverlay" style="display:none">
+        <p class="loading-title">正在分析中</p>
+        <div class="progress-wrap">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+            <span class="progress-percent" id="progressPercent">0%</span>
+          </div>
+        </div>
+        <div class="loading-steps">
+          <span class="step" id="step1">关键帧提取</span><span class="step-sep">·</span>
+          <span class="step" id="step2">猫狗识别</span><span class="step-sep">·</span>
+          <span class="step" id="step3">姿态检测</span><span class="step-sep">·</span>
+          <span class="step" id="step4">指数计算</span>
+        </div>
+      </div>
+
+      <!-- 错误 -->
+      <div class="right-overlay" id="errorOverlay" style="display:none">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4686a" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="#d4686a"/>
+        </svg>
+        <p class="error-title" id="errorText">分析失败</p>
+        <button class="btn-retry" id="retryBtn">重试</button>
+      </div>
+
+      <!-- ===== 结果内容 ===== -->
+      <div class="right-results" id="rightResults" style="display:none">
+
+        <!-- 动物横幅 -->
+        <div class="result-banner" id="resultBanner">
+          <div class="banner-left">
+            <svg id="dogIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="16" cy="8" r="1.5" fill="currentColor"/>
+              <path d="M3 12c0-4.5 3.5-8 8-8h2c4.5 0 8 3.5 8 8v2c0 2-1.5 3.5-3.5 3.5h-1.5c-1 0-2 .5-2.5 1.5l-.5 1h-2l-.5-1c-.5-1-1.5-1.5-2.5-1.5H6.5C4.5 17.5 3 16 3 14v-2z"/>
+            </svg>
+            <svg id="catIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <path d="M12 5c-2 0-4 1-5 3l-2 4c-.5 1 .5 2 1.5 1.5L8 13c.5 1 1.5 2 2.5 2h3c1 0 2-1 2.5-2l1.5.5c1 .5 2-.5 1.5-1.5l-2-4c-1-2-3-3-5-3z"/>
+              <path d="M8 6c-1-2-3-3-4-2s-1 3 0 3.5"/><path d="M16 6c1-2 3-3 4-2s1 3 0 3.5"/>
+              <circle cx="10" cy="11" r="1" fill="currentColor"/><circle cx="14" cy="11" r="1" fill="currentColor"/>
+            </svg>
+            <div>
+              <span class="banner-animal" id="animalName">狗狗</span>
+              <span class="banner-type" id="animalType">犬类</span>
+            </div>
+          </div>
+          <div class="banner-right">
+            <span class="banner-conf" id="confidenceValue">93%</span>
+            <span class="banner-conf-label">置信度</span>
+          </div>
+        </div>
+
+        <!-- 行1：最佳帧 | 姿态检测结果 -->
+        <div class="images-row">
+          <div class="result-block image-block">
+            <h3 class="block-title" id="frameTitle">最佳帧</h3>
+            <div class="img-box">
+              <img id="bestFrameImg" src="" alt="最佳帧" style="display:none">
+              <span class="img-placeholder" id="framePlaceholder">暂无图片</span>
+            </div>
+          </div>
+          <div class="result-block image-block">
+            <h3 class="block-title" id="detectionTitle">姿态检测结果</h3>
+            <div class="img-box">
+              <img id="detectionImg" src="" alt="检测结果" style="display:none">
+              <video id="detectionVideo" muted loop playsinline controls style="display:none; width:100%; max-height:500px;"></video>
+              <span class="img-placeholder" id="detectionPlaceholder">暂无图片</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 行2：静态姿态指标 + 动态行为指标（视频时显示双列） -->
+        <div class="metrics-row" id="metricsRow">
+          <div class="result-block" id="staticBlock">
+            <h3 class="block-title">静态姿态指标</h3>
+            <div class="static-pose" id="staticPose"></div>
+          </div>
+          <div class="result-block" id="dynamicBlock" style="display:none">
+            <h3 class="block-title">动态行为指标</h3>
+            <div class="dynamic-behavior" id="dynamicBehavior"></div>
+          </div>
+        </div>
+
+        <!-- 行3：雷达图 | 详细指数 -->
+        <div class="charts-row">
+          <div class="result-block chart-block">
+            <h3 class="block-title">六维状态指数</h3>
+            <div class="chart-box" id="radarChart"></div>
+          </div>
+          <div class="result-block scores-block">
+            <h3 class="block-title">详细指数</h3>
+            <div class="scores-grid" id="scoresGrid"></div>
+          </div>
+        </div>
+
+        <!-- 综合评价 -->
+        <div class="result-block">
+          <h3 class="block-title">综合评价</h3>
+          <div class="comment-box" id="commentBox">
+            <p class="comment-text" id="commentText"></p>
+          </div>
+        </div>
+
+        <button class="btn-reset" id="resetBtn">重新分析</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bottombar">
+    <span>模式识别课程大作业 &mdash; 宠物状态分析系统</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ===== 虚拟环境 =====
+petdemo/
+.venv/
+.venv_run/
+venv/
+env/
+
+# ===== 模型权重（体积大，见 README 获取方式）=====
+*.pt
+*.pth
+
+# ===== 运行时上传与生成结果 =====
+uploads/*
+!uploads/.gitkeep
+static/results/*
+!static/results/.gitkeep
+modules/detection/dog_pose/outputs/
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+
+# ===== 操作系统 =====
+.DS_Store
+Thumbs.db
